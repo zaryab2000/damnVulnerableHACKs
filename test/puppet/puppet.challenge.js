@@ -93,12 +93,6 @@ describe('[Challenge] Puppet', function () {
 
     it('Exploit', async function () {
         /** YOUR EXPLOIT GOES HERE */
-       // const price = calculateTokenToEthInputPrice(
-       //          ether('1'),
-       //          UNISWAP_INITIAL_TOKEN_RESERVE,
-       //          UNISWAP_INITIAL_ETH_RESERVE
-       //      )
-       // console.log(price.toString())
 
         const tokensForSale = ether('3');
         const minEth = ether('2');
@@ -123,7 +117,7 @@ describe('[Challenge] Puppet', function () {
         expect(
             await this.token.balanceOf(attacker)
         ).to.be.bignumber.gte(POOL_INITIAL_TOKEN_BALANCE);
-        
+
         expect(
             await this.token.balanceOf(this.lendingPool.address)
         ).to.be.bignumber.eq('0');
@@ -134,5 +128,3 @@ describe('[Challenge] Puppet', function () {
         ).to.be.bignumber.gte(this.intialAttackerEthBalance);
     });
 });
-// +10000000000000000000000
-// -100000000000000000000
