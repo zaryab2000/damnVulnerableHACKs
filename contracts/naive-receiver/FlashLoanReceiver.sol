@@ -2,7 +2,7 @@ pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-
+//Receiver Pool
 contract FlashLoanReceiver {
     using SafeMath for uint256;
     using Address for address payable;
