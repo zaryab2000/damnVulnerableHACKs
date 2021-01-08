@@ -1,5 +1,5 @@
 pragma solidity ^0.6.0;
-
+// Drain Its funds
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
